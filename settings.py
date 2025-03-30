@@ -1,9 +1,12 @@
-# Definindo configurações de largura e altura da tela
+# Configurações principais do jogo
 WIDTH = 800
 HEIGHT = 600
+FPS = 60
 
-# Gravidade que afeta o jogador
+# Física do player
 GRAVITY = 0.5
+JUMP_STRENGTH = -10
 
-# Força do pulo
-JUMP_STRENGTH = 10
+# Configurações da plataforma
+PLATFORM_WIDTH = 100
+PLATFORM_HEIGHT = 20

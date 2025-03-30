@@ -1,22 +1,12 @@
-# main.py
 import pygame
 from menu import Menu
-from game import Game
+from settings import WIDTH, HEIGHT
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     menu = Menu(screen)
-
-    # Loop do menu
-    while True:
-        action = menu.run()
-        if action == "start_game":
-            game = Game()
-            game.run()
-        elif action == "exit":
-            pygame.quit()
-            exit()
+    menu.run()
 
 if __name__ == "__main__":
     main()
