@@ -1,17 +1,22 @@
+# main.py
 import pygame
+from menu import Menu
+from game import Game
 
-print("Setup Start")
-pygame.init()
-window = pygame.display.set_mode(size=(1560, 720))
-print("Setup end")
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    menu = Menu(screen)
 
-print("Loop start")
-while True:
-    # check for all events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit() # close window
-            quit() # end pygame
+    # Loop do menu
+    while True:
+        action = menu.run()
+        if action == "start_game":
+            game = Game()
+            game.run()
+        elif action == "exit":
+            pygame.quit()
+            exit()
 
-
-
+if __name__ == "__main__":
+    main()
