@@ -1,50 +1,38 @@
 import pygame
-from settings import WIDTH, HEIGHT
 from game import Game
 
+pygame.init()
+
 class Menu:
-    def __init__(self, screen):
-        self.screen = screen
-        self.font = pygame.font.Font(None, 40)
-        self.options = ["Start Game", "Difficulty", "Score", "Exit"]
-        self.selected = 0
+    def __init__(self):
+        self.screen = pygame.display.set_mode((800, 600))
+        pygame.display.set_caption("Jump To Sky - Menu")
+        self.clock = pygame.time.Clock()
+        self.running = True
 
-        # Carregar as camadas do fundo do menu
-        self.backgrounds = [
-            pygame.image.load(f"assets/bg_menu_layer{i}.png").convert()
-            for i in range(1, 7)
-        ]
-
-    def draw(self):
-        self.screen.fill((0, 0, 0))
-
-        # Desenhar camadas do fundo
-        for bg in self.backgrounds:
-            self.screen.blit(bg, (0, 0))
-
-        # Desenhar opções do menu
-        for i, option in enumerate(self.options):
-            color = (255, 255, 255) if i == self.selected else (150, 150, 150)
-            text = self.font.render(option, True, color)
-            self.screen.blit(text, (WIDTH // 2 - 50, 200 + i * 50))
-
-        pygame.display.flip()
+        # Música de fundo
+        pygame.mixer.music.load("assets/bg_music.wav")
+        pygame.mixer.music.play(-1)
 
     def run(self):
-        running = True
-        while running:
+        while self.running:
+            self.screen.fill((50, 50, 50))
+            font = pygame.font.Font(None, 36)
+            text = font.render("Press ENTER to Start", True, (255, 255, 255))
+            self.screen.blit(text, (300, 250))
+
+            pygame.display.flip()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    self.running = False
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        self.selected = (self.selected - 1) % len(self.options)
-                    if event.key == pygame.K_DOWN:
-                        self.selected = (self.selected + 1) % len(self.options)
                     if event.key == pygame.K_RETURN:
-                        if self.options[self.selected] == "Start Game":
-                            game = Game()
-                            game.run()
-                        elif self.options[self.selected] == "Exit":
-                            running = False
-            self.draw()
+                        game = Game()
+                        game.run()
+                    if event.key == pygame.K_ESCAPE:
+                        self.running = False
+
+            self.clock.tick(60)
+
+        pygame.quit()

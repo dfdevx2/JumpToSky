@@ -1,74 +1,53 @@
 import pygame
-import random
-from settings import WIDTH, HEIGHT, FPS
 from player import Player
 from platform import Platform
 
-
 class Game:
     def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("Jump to Sky")
+        self.screen = pygame.display.set_mode((800, 600))
+        pygame.display.set_caption("Jump To Sky")
         self.clock = pygame.time.Clock()
+        self.running = True
 
-        # Carregar imagens
-        self.bg = pygame.image.load("assets/background.png").convert()
+        # Música do jogo
+        pygame.mixer.music.load("assets/bg_music.wav")
+        pygame.mixer.music.play(-1)
 
-        # Criar grupos de sprites
         self.all_sprites = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
 
-        # Criar player
-        self.player = Player(self)
-        self.all_sprites.add(self.player)
-
-        # Criar piso inicial
-        self.floor = Platform(WIDTH // 2 - 100, HEIGHT - 50)
-        self.all_sprites.add(self.floor)
-        self.platforms.add(self.floor)
-
         # Criar plataformas iniciais
-        for i in range(5):
-            x = random.randint(50, WIDTH - 200)
-            y = HEIGHT - (i * 100) - 100
-            platform = Platform(x, y)
+        initial_platforms = [Platform(300, 500), Platform(400, 400), Platform(200, 300)]
+        for platform in initial_platforms:
             self.all_sprites.add(platform)
             self.platforms.add(platform)
 
-    def run(self):
-        running = True
-        while running:
-            self.clock.tick(FPS)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+        self.player = Player(self)
+        self.all_sprites.add(self.player)
 
+    def run(self):
+        while self.running:
+            self.events()
             self.update()
             self.draw()
-        pygame.quit()
+            self.clock.tick(60)
+
+    def events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
 
     def update(self):
         self.all_sprites.update()
 
-        # Se o player sobe, move tudo para baixo
-        if self.player.rect.top < HEIGHT // 2:
-            self.player.rect.y += 5
-            for platform in self.platforms:
-                platform.rect.y += 5
-                if platform.rect.top > HEIGHT:
-                    platform.kill()
-                    self.create_platform()
+        # Verificar colisão com plataformas
+        for platform in self.platforms:
+            if self.player.rect.colliderect(platform.rect) and self.player.velocity_y > 0:
+                self.player.rect.bottom = platform.rect.top
+                self.player.velocity_y = 0
+                platform.kill()  # Remove a plataforma após ser usada
 
     def draw(self):
-        self.screen.blit(self.bg, (0, 0))
+        self.screen.fill((135, 206, 250))  # Fundo azul céu
         self.all_sprites.draw(self.screen)
         pygame.display.flip()
-
-    def create_platform(self):
-        """Cria novas plataformas proceduralmente."""
-        x = random.randint(50, WIDTH - 200)
-        y = random.randint(-50, 0)
-        platform = Platform(x, y)
-        self.all_sprites.add(platform)
-        self.platforms.add(platform)

@@ -1,22 +1,24 @@
 import pygame
-from settings import GRAVITY, JUMP_STRENGTH
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, game):
         super().__init__()
         self.image = pygame.image.load("assets/player.png").convert_alpha()
-        self.rect = self.image.get_rect(midbottom=(x, y))
-        self.vel_y = 0
+        self.rect = self.image.get_rect(midbottom=(400, 550))
+        self.velocity_y = 0
+        self.gravity = 0.5
+        self.jump_strength = -12
+        self.game = game
 
-    def jump(self):
-        self.vel_y = JUMP_STRENGTH
+        # Som do pulo
+        self.jump_sound = pygame.mixer.Sound("assets/player_jump.wav")
 
     def update(self):
-        self.vel_y += GRAVITY
-        self.rect.y += self.vel_y
-
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.rect.x -= 5
-        if keys[pygame.K_RIGHT]:
-            self.rect.x += 5
+        if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
+            if self.velocity_y == 0:  # Somente pula se estiver sobre uma plataforma
+                self.velocity_y = self.jump_strength
+                self.jump_sound.play()
+
+        self.velocity_y += self.gravity
+        self.rect.y += self.velocity_y
